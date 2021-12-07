@@ -1,4 +1,5 @@
 module Day3 (p1, p2, toInt) where
+import Helpers
 import Data.List
 import Debug.Trace
 
@@ -22,9 +23,9 @@ toBinary :: String -> Binary
 toBinary = map (== '1')
 
 toInt :: Binary -> Int
-toInt bin = foldl' (\acc (i, bit) -> if bit then acc + 2^i else acc) 0 indexedBin
+toInt bin = foldl' (\acc (i, bit) -> bit ? acc + 2^i :? acc) 0 indexedBin
     where
-        indexedBin = zip [length bin - 1, length bin -2..0] bin
+        indexedBin = zip (reverse [0..length bin - 1]) bin
 
 multiplyWithComplement :: Binary -> Int
 multiplyWithComplement value = (toInt value) * (toInt $ getComplement value)
@@ -33,7 +34,7 @@ getMostCommonForAll :: ((Int, Int) -> Bool) -> Bool -> [Binary] -> Binary
 getMostCommonForAll compare isReductive values = fst $ foldl' foldFn ([], values) indices
     where
         foldFn (acc, possibilities) index =
-            let newAcc = if length possibilities == 1 then head possibilities else acc ++ [compareColumn (possibilities, index)]
+            let newAcc = length possibilities == 1 ? head possibilities :? acc ++ [compareColumn (possibilities, index)]
                 filteredPossibilities = filter (newAcc `isPrefixOf`) possibilities
                 newPossibilities = if null filteredPossibilities || not isReductive then possibilities else filteredPossibilities
             in
@@ -45,7 +46,7 @@ getColumn :: [Binary] -> Int -> Binary
 getColumn values col = map (!!col) values
 
 getBinaryCount :: Binary -> (Int, Int)
-getBinaryCount = foldl' (\(zeros, ones) x -> if x then (zeros, ones+1) else (zeros+1, ones)) (0, 0)
+getBinaryCount = foldl' (\(zeros, ones) x -> x ? (zeros, ones+1) :? (zeros+1, ones)) (0, 0)
 
 
 
