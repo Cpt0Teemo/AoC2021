@@ -1,7 +1,6 @@
 module Day3 (p1, p2, toInt) where
 import Helpers
 import Data.List
-import Debug.Trace
 
 type Binary = [Bool]
 
@@ -36,7 +35,7 @@ getMostCommonForAll compare isReductive values = fst $ foldl' foldFn ([], values
         foldFn (acc, possibilities) index =
             let newAcc = length possibilities == 1 ? head possibilities :? acc ++ [compareColumn (possibilities, index)]
                 filteredPossibilities = filter (newAcc `isPrefixOf`) possibilities
-                newPossibilities = if null filteredPossibilities || not isReductive then possibilities else filteredPossibilities
+                newPossibilities = null filteredPossibilities || not isReductive ? possibilities :? filteredPossibilities
             in
                 (newAcc, newPossibilities)
         indices = [0..length (head values)-1]
@@ -46,7 +45,7 @@ getColumn :: [Binary] -> Int -> Binary
 getColumn values col = map (!!col) values
 
 getBinaryCount :: Binary -> (Int, Int)
-getBinaryCount = foldl' (\(zeros, ones) x -> x ? (zeros, ones+1) :? (zeros+1, ones)) (0, 0)
+getBinaryCount = foldl' (\(zeros, ones) bit -> bit ? (zeros, ones+1) :? (zeros+1, ones)) (0, 0)
 
 
 
