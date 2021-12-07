@@ -4,5 +4,5 @@ import GHC.Base (Any)
 linesAndCastAsInt :: String -> [Int]
 linesAndCastAsInt = map (\x -> read x :: Int) . lines
 
-reverseList :: [Int] -> [Int]
+reverseList :: [a] -> [a]
 reverseList = foldl (flip (:)) []
